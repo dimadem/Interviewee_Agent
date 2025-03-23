@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оценка интервью</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex justify-center items-center bg-[#2B2D33] min-h-screen font-sans">
+    <div class="bg-white shadow p-6 rounded w-full max-w-md">
+        <h1 class="mb-4 font-bold text-2xl text-center">Оценка интервью</h1>
+        <p class="mb-4 text-center">Оценка интервью методом STAR:</p>
+        <div id="status-message" class="hidden mb-3 p-2 rounded text-center"></div>
+        <form id="evaluationForm" class="space-y-4">
+            <div>
+                <label for="json-input" class="block mb-1">JSON данные интервью:</label>
+                <textarea id="json-input" name="json-data" rows="10" cols="50" class="p-2 border rounded w-full"></textarea>
+                <p class="mt-1 text-gray-500 text-xs">Вставьте JSON с историей сообщений интервью или загрузите файл</p>
+                <input type="file" id="json-file" accept=".json" class="mt-2 text-sm" />
+            </div>
+            <div class="flex justify-between items-center">
+                <a href="/" class="bg-gray-500 hover:bg-gray-600 px-4 py-2 rounded text-white">Назад</a>
+                <button type="submit" class="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded text-white">Оценить</button>
+            </div>
+        </form>
+    </div>
+    <script>
+    // Обработчик загрузки файла
+    document.getElementById('json-file').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('json-input').value = e.target.result;
+        };
+        reader.onerror = function(e) {
+            showStatus('error', 'Ошибка чтения файла');
+        };
+        reader.readAsText(file);
+    });
+    
+    // Обработчик отправки формы
+    document.getElementById('evaluationForm').addEventListener('submit', function(event) 
+    {
+        event.preventDefault();
+        const statusMessage = document.getElementById('status-message');
+        const jsonText = document.getElementById('json-input').value.trim();
+        
+        // Проверка на пустое поле
+        if (!jsonText) {
+            showStatus('error', 'Пожалуйста, введите данные JSON или загрузите файл');
+            return;
+        }
+        
+        try {
+            // Проверка валидности JSON
+            const jsonData = JSON.parse(jsonText);
+            
+            // Проверка наличия всех необходимых полей
+            if (!jsonData.timestamp) {
+                showStatus('error', 'Отсутствует поле "timestamp" в JSON');
+                return;
+            }
+            
+            if (!jsonData.persona) {
+                showStatus('error', 'Отсутствует поле "persona" в JSON');
+                return;
+            }
+            
+            if (!jsonData.skill) {
+                showStatus('error', 'Отсутствует поле "skill" в JSON');
+                return;
+            }
+            
+            if (!jsonData.messages || !Array.isArray(jsonData.messages)) {
+                showStatus('error', 'Отсутствует массив "messages" в JSON');
+                return;
+            }
+            
+            // Проверка, что у нас есть хотя бы несколько сообщений
+            if (jsonData.messages.length < 2) {
+                showStatus('error', 'Требуется минимум 2 сообщения для анализа');
+                return;
+            }
+            
+            // Проверка формата сообщений
+            for (const msg of jsonData.messages) {
+                if (!msg.role || !msg.content) {
+                    showStatus('error', 'Каждое сообщение должно содержать поля "role" и "content"');
+                    return;
+                }
+            }
+            
+            // Подготовка данных для отправки
+            const dataToSend = { 
+                timestamp: jsonData.timestamp,
+                persona: jsonData.persona,
+                skill: jsonData.skill,
+                messages: jsonData.messages
+            };
+            
+            showStatus('info', 'Обработка данных...');
+            
+            // Отправка на бэкенд
+            fetch('/api/evaluation', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(dataToSend)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Перенаправление на страницу отчета
+                window.location.href = '/report';
+            })
+            .catch(error => {
+                showStatus('error', `Ошибка: ${error.message}`);
+            });
+        } catch(e) {
+            showStatus('error', `Неверный формат JSON: ${e.message}`);
+        }
+    });
+    
+    function showStatus(type, message) {
+        const statusElement = document.getElementById('status-message');
+        statusElement.textContent = message;
+        statusElement.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-blue-100', 'text-blue-700');
+        
+        if (type === 'error') {
+            statusElement.classList.add('bg-red-100', 'text-red-700');
+        } else {
+            statusElement.classList.add('bg-blue-100', 'text-blue-700');
+        }
+    }
+    </script>
+</body>
+</html>
