@@ -1,70 +1,83 @@
 #!/bin/bash
 set -e
 
-# Variables to be provided as arguments
 APP_DIR=$1
 REPO_URL=$2
 OPENAI_API_KEY=$3
+DOMAIN=$4
 
-echo "Starting deployment process..."
-
-# Install required dependencies
+echo "=== Installing system dependencies ==="
 apt-get update
-apt-get install -y python3-venv python3-pip
+apt-get install -y --no-install-recommends \
+    curl \
+    gnupg2 \
+    ca-certificates \
+    lsb-release \
+    git \
+    python3.11-venv \
+    python3-pip
 
-# Remove old directory if exists
+echo "=== Installing Nginx 1.27.4 ==="
+echo "deb http://nginx.org/packages/mainline/ubuntu $(lsb_release -cs) nginx" > /etc/apt/sources.list.d/nginx.list
+curl -fsSL https://nginx.org/keys/nginx_signing.key | gpg --dearmor > /etc/apt/trusted.gpg.d/nginx.gpg
+apt-get update
+apt-get install -y nginx=1.27.4*
+
+echo "=== Configuring Nginx ==="
+cp $APP_DIR/config/nginx-fastapi.conf /etc/nginx/conf.d/app.conf
+sed -i "s/your-domain.com/$DOMAIN/g" /etc/nginx/conf.d/app.conf
+nginx -t
+
+echo "=== Installing Certbot ==="
+snap install --classic certbot
+ln -s /snap/bin/certbot /usr/bin/certbot
+certbot --nginx -d $DOMAIN --non-interactive --agree-tos -m admin@$DOMAIN
+
+echo "=== Setting up firewall ==="
+ufw allow 'Nginx Full'
+ufw delete allow 'Nginx HTTP'
+
+echo "=== Deploying application ==="
 if [ -d "$APP_DIR" ]; then
-  echo "Removing old application directory..."
   rm -rf $APP_DIR
 fi
 
-# Create directory and clone fresh repository
-echo "Cloning fresh repository..."
-mkdir -p $APP_DIR
 git clone $REPO_URL $APP_DIR
 cd $APP_DIR
 
-# Create .env file with environment variables
-echo "Creating .env file with environment variables..."
-cat > .env << EOL
-OPENAI_API_KEY=${OPENAI_API_KEY}
-PRODUCTION=true
-EOL
+echo "=== Creating virtual environment ==="
+python3.11 -m venv .venv
+source .venv/bin/activate
+pip install --no-cache-dir -U pip setuptools wheel
+pip install --no-cache-dir -r requirements.txt
 
-# Install dependencies
-echo "Installing dependencies..."
-./setup.sh
+echo "PRODUCTION=true" > .env
+echo "OPENAI_API_KEY=$OPENAI_API_KEY" >> .env
 
-# Create systemd service file
-echo "Creating systemd service file..."
-cat > /tmp/ai-agent-service << 'EOL'
+echo "=== Creating systemd service ==="
+cat > /etc/systemd/system/app.service << EOL
 [Unit]
-Description=AI Agent Conversation FastAPI App
+Description=FastAPI Application
 After=network.target
 
 [Service]
-User=root
-WorkingDirectory=APP_DIR
-ExecStart=APP_DIR/.venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
+User=www-data
+Group=www-data
+WorkingDirectory=$APP_DIR
+ExecStart=$APP_DIR/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000
+EnvironmentFile=$APP_DIR/.env
 Restart=always
-EnvironmentFile=APP_DIR/.env
 
 [Install]
 WantedBy=multi-user.target
 EOL
 
-# Replace APP_DIR placeholder with actual path
-sed -i "s|APP_DIR|$APP_DIR|g" /tmp/ai-agent-service
-
-# Install and start service
-mv /tmp/ai-agent-service /etc/systemd/system/ai-agent-conversation.service
+echo "=== Starting services ==="
 systemctl daemon-reload
-systemctl enable ai-agent-conversation
-systemctl restart ai-agent-conversation
+systemctl enable app.service nginx
+systemctl restart app.service nginx
 
-echo "Deployment completed successfully!"
-echo "Service status:"
-systemctl status ai-agent-conversation --no-pager
-
-# Print URL for checking API
-echo "API should be available at: http://$(hostname -I | awk '{print $1}'):8000/docs"
+echo "=== Deployment complete ==="
+echo "Application URL: https://$DOMAIN"
+echo "Admin URL: https://$DOMAIN/admin"
+echo "API Docs: https://$DOMAIN/docs"
