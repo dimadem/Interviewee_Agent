@@ -4,7 +4,7 @@ set -e
 APP_DIR=$1
 REPO_URL=$2
 OPENAI_API_KEY=$3
-PORT=${4:-8000}  # Default port 8000 if not provided
+PORT=8000
 
 echo "=== Installing system dependencies ==="
 apt-get update

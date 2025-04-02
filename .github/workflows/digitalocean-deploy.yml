@@ -45,7 +45,12 @@ jobs:
             mkdir -p /tmp/deploy
             cd /tmp/deploy
             echo "Downloading deployment script..."
+            APP_DIR="/opt/interviewee_agent"
+            REPO_URL="https://github.com/${{ github.repository }}.git"
+            OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}"
+            echo "Repository URL: $REPO_URL"
             curl -s -o _deploy.sh https://raw.githubusercontent.com/${{ github.repository }}/main/_deploy.sh
             chmod +x _deploy.sh
             echo "Executing deployment script..."
-            ./_deploy.sh '/opt/interviewee_agent' 'https://github.com/${{ github.repository }}.git' '${{ secrets.OPENAI_API_KEY }}'
+            OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}"
+            ./_deploy.sh "$APP_DIR" "$REPO_URL" "$OPENAI_API_KEY"
