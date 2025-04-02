@@ -13,8 +13,7 @@ apt-get install -y --no-install-recommends \
     gnupg2 \
     ca-certificates \
     lsb-release \
-    git \
-    python3-pip
+    git 
 
 echo "=== Installing Nginx 1.27.4 ==="
 echo "deb http://nginx.org/packages/mainline/ubuntu $(lsb_release -cs) nginx" > /etc/apt/sources.list.d/nginx.list
@@ -45,7 +44,7 @@ git clone $REPO_URL $APP_DIR
 cd $APP_DIR
 
 echo "=== Creating virtual environment ==="
-python3.11 -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate
 pip install --no-cache-dir -U pip setuptools wheel
 pip install --no-cache-dir -r requirements.txt
