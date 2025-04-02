@@ -75,6 +75,15 @@ WantedBy=multi-user.target
 EOL
 
 echo "=== Starting services ==="
+# Kill any processes using port 8000 before starting
+if lsof -ti:$PORT > /dev/null; then
+  echo "Killing existing processes on port $PORT"
+  lsof -ti:$PORT | xargs kill -9
+fi
+
+# Make sure the service is stopped before restarting
+systemctl stop app.service || true
+
 systemctl daemon-reload
 systemctl enable app.service nginx
 systemctl restart app.service nginx
