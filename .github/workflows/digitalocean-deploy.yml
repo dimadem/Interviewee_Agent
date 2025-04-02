@@ -14,6 +14,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         
+      # Ensure Python and pip are set up before caching
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      # Install dependencies to populate the cache directory
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      # Cache pip packages
       - name: Setup Python cache
         uses: actions/cache@v4
         with:
@@ -22,6 +33,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
       
+      # Deployment step
       - name: Deploy to DigitalOcean
         uses: appleboy/ssh-action@v1
         with:
@@ -32,10 +44,8 @@ jobs:
             echo "Starting deployment process..."
             mkdir -p /tmp/deploy
             cd /tmp/deploy
-            # Download deployment script directly from repository
             echo "Downloading deployment script..."
             curl -s -o _deploy.sh https://raw.githubusercontent.com/${{ github.repository }}/main/_deploy.sh
             chmod +x _deploy.sh
-            # Execute deployment script
             echo "Executing deployment script..."
             ./_deploy.sh '/opt/interviewee_agent' 'https://github.com/${{ github.repository }}.git' '${{ secrets.OPENAI_API_KEY }}'
