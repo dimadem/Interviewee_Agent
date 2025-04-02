@@ -25,6 +25,13 @@ apt-get install -y nginx=1.27.4*
 
 echo "=== Setting up firewall ==="
 ufw allow 80/tcp
+ufw allow 443/tcp
+
+echo "=== Creating SSL certificates ==="
+mkdir -p /etc/nginx/ssl
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+  -keyout /etc/nginx/ssl/nginx.key -out /etc/nginx/ssl/nginx.crt \
+  -subj "/C=US/ST=State/L=City/O=Organization/CN=165.22.92.253"
 
 echo "=== Deploying application ==="
 if [ -d "$APP_DIR" ]; then
