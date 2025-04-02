@@ -78,7 +78,7 @@
         // Создание и управление WebSocket
         function connectWebSocket() {
             // URL WebSocket с параметрами
-            const baseWsUrl = window.location.hostname === 'localhost' ? 'ws://localhost:8000' : `ws://${window.location.host}`;
+            const baseWsUrl = window.location.hostname === 'localhost' ? 'ws://localhost:8000' : `wss://${window.location.host}`;
             ws = new WebSocket(`${baseWsUrl}/ws/interview?persona=${encodeURIComponent(currentPersona)}&skill=${encodeURIComponent(currentSkill)}`);
             
             updateConnectionStatus('Подключение...', 'yellow');
