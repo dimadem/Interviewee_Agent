@@ -23,11 +23,6 @@ curl -fsSL https://nginx.org/keys/nginx_signing.key | gpg --dearmor > /etc/apt/t
 apt-get update
 apt-get install -y nginx=1.27.4*
 
-echo "=== Configuring Nginx ==="
-cp $APP_DIR/config/nginx-fastapi.conf /etc/nginx/conf.d/app.conf
-# Use IP address instead of domain
-nginx -t
-
 echo "=== Setting up firewall ==="
 ufw allow 'Nginx HTTP'
 
@@ -38,6 +33,11 @@ fi
 
 git clone $REPO_URL $APP_DIR
 cd $APP_DIR
+
+echo "=== Configuring Nginx ==="
+cp $APP_DIR/config/nginx-fastapi.conf /etc/nginx/conf.d/app.conf
+# Use IP address instead of domain
+nginx -t
 
 # Using the pre-installed dependencies from GitHub Actions
 echo "=== Creating virtual environment ==="
