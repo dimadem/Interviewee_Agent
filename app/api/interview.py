@@ -13,9 +13,8 @@ from pprint import pp
 from agents import Runner
 from app.agents.interviewee_agent import create_interviewee_agent
 
-# Создаем директорию для временных файлов
-# Используем абсолютный путь к директории temp
-TEMP_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "temp")
+# Используем директорию /tmp для временных файлов (доступна для записи всем пользователям)
+TEMP_DIR = "/tmp/ai-interview-temp"
 os.makedirs(TEMP_DIR, exist_ok=True)
 
 router = APIRouter()

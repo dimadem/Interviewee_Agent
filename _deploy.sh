@@ -69,6 +69,10 @@ WorkingDirectory=$APP_DIR
 ExecStart=$APP_DIR/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port $PORT
 EnvironmentFile=$APP_DIR/.env
 Restart=always
+# Создаем /tmp директорию с правильными правами доступа
+ExecStartPre=/bin/mkdir -p /tmp/ai-interview-temp
+ExecStartPre=/bin/chown -R www-data:www-data /tmp/ai-interview-temp
+ExecStartPre=/bin/chmod 755 /tmp/ai-interview-temp
 
 [Install]
 WantedBy=multi-user.target
