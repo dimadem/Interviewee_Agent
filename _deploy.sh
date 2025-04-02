@@ -24,7 +24,7 @@ apt-get update
 apt-get install -y nginx=1.27.4*
 
 echo "=== Setting up firewall ==="
-ufw allow 'Nginx HTTP'
+ufw allow 80/tcp
 
 echo "=== Deploying application ==="
 if [ -d "$APP_DIR" ]; then
