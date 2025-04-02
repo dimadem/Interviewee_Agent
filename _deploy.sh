@@ -51,7 +51,7 @@ nginx -t
 echo "=== Creating virtual environment ==="
 python3 -m venv .venv
 source .venv/bin/activate
-pip install --no-cache-dir -r requirements.txt --no-deps
+pip install --no-cache-dir -r requirements.txt
 
 echo "PRODUCTION=true" > .env
 echo "OPENAI_API_KEY=$OPENAI_API_KEY" >> .env
