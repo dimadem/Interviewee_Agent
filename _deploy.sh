@@ -13,7 +13,9 @@ apt-get install -y --no-install-recommends \
     gnupg2 \
     ca-certificates \
     lsb-release \
-    git 
+    git \
+    python3 \
+    python3-venv \
 
 echo "=== Installing Nginx 1.27.4 ==="
 echo "deb http://nginx.org/packages/mainline/ubuntu $(lsb_release -cs) nginx" > /etc/apt/sources.list.d/nginx.list
