@@ -1,0 +1,41 @@
+name: Deploy 2 DigitalOcean
+
+on:
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Python cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      
+      - name: Deploy to DigitalOcean
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DROPLET_IP }}
+          username: root
+          password: ${{ secrets.DROPLET_PASSWORD }}
+          script: |
+            echo "Starting deployment process..."
+            mkdir -p /tmp/deploy
+            cd /tmp/deploy
+            # Download deployment script directly from repository
+            echo "Downloading deployment script..."
+            curl -s -o _deploy.sh https://raw.githubusercontent.com/${{ github.repository }}/main/_deploy.sh
+            chmod +x _deploy.sh
+            # Execute deployment script
+            echo "Executing deployment script..."
+            ./_deploy.sh '/opt/interviewee_agent' 'https://github.com/${{ github.repository }}.git' '${{ secrets.OPENAI_API_KEY }}'
