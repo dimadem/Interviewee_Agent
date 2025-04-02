@@ -27,12 +27,6 @@ echo "=== Setting up firewall ==="
 ufw allow 80/tcp
 ufw allow 443/tcp
 
-echo "=== Creating SSL certificates ==="
-mkdir -p /etc/nginx/ssl
-openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-  -keyout /etc/nginx/ssl/nginx.key -out /etc/nginx/ssl/nginx.crt \
-  -subj "/C=US/ST=State/L=City/O=Organization/CN=165.22.92.253"
-
 echo "=== Deploying application ==="
 if [ -d "$APP_DIR" ]; then
   rm -rf $APP_DIR
@@ -40,6 +34,13 @@ fi
 
 git clone $REPO_URL $APP_DIR
 cd $APP_DIR
+
+# Create SSL certificates before configuring nginx
+echo "=== Creating SSL certificates ==="
+mkdir -p /etc/nginx/ssl
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+  -keyout /etc/nginx/ssl/nginx.key -out /etc/nginx/ssl/nginx.crt \
+  -subj "/C=US/ST=State/L=City/O=Organization/CN=165.22.92.253"
 
 echo "=== Configuring Nginx ==="
 cp $APP_DIR/config/nginx-fastapi.conf /etc/nginx/conf.d/app.conf
@@ -80,5 +81,7 @@ systemctl restart app.service nginx
 
 echo "=== Deployment complete ==="
 IP_ADDRESS=$(curl -s ifconfig.me)
-echo "Application URL: http://$IP_ADDRESS"
-echo "API Docs: http://$IP_ADDRESS/docs"
+echo "Application URLs:"
+echo "HTTP: http://$IP_ADDRESS"
+echo "HTTPS: https://$IP_ADDRESS"
+echo "API Docs: https://$IP_ADDRESS/docs"
