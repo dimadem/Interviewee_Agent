@@ -14,7 +14,6 @@ apt-get install -y --no-install-recommends \
     ca-certificates \
     lsb-release \
     git \
-    python3-venv \
     python3-pip
 
 echo "=== Installing Nginx 1.27.4 ==="
