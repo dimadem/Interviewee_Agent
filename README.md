@@ -32,7 +32,24 @@
 5. OPENAI_API_KEY -> current openai api key
 
 ### **Development**
-1. 
+1. ssh root@ip -> password
+2. install deps
+```
+apt-get update
+apt-get install -y --no-install-recommends \
+    curl \
+    gnupg2 \
+    ca-certificates \
+    lsb-release \
+    git \
+    python3 \
+    python3-venv \
+    software-properties-common
+```
+3. git pull
+4. VSCode -> ssh connect with `https://code.visualstudio.com/docs/remote/ssh-tutorial`
+5. ./dev.sh -> open server as a localhost, VSCode handles all port redirections
+6. enojy
 
 ---
 
