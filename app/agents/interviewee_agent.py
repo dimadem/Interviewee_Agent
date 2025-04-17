@@ -8,4 +8,3 @@ def create_interviewee_agent(system_prompt: str) -> Agent:
         instructions=system_prompt,
         tools=[lie_answer],
     )
-

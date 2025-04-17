@@ -21,7 +21,6 @@ class TTT:
 
         except Exception as e:
             return f"Error generating response: {str(e)}"
-        
 
     def generate_response_with_function(self, messages: List[Dict[str, str]], functions: List[Dict] = None) -> Union[str, Dict]:
         """

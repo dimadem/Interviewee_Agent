@@ -1,8 +1,6 @@
 from typing import BinaryIO
 from app.core.openai import client
 
-CHUNK_SIZE = 4000
-
 class STT:
     def __init__(self, model: str = "whisper-1"):
         self.client = client

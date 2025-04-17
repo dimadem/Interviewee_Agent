@@ -7,29 +7,30 @@ from app.api.interview import router as interview_router
 
 app = FastAPI()
 
+# Инициализируем роутеры для API
 app.include_router(evaluation_router)
 app.include_router(interview_router)
 
-# Инициализируем frontend
-index_html = Jinja2Templates(directory="app/frontend")
+# Templates for frontend
+templates = Jinja2Templates(directory="app/frontend")
 
-# Роут для отображения HTML страницы
+# Роуты для отображения HTML страницы
 @app.get("/", response_class=HTMLResponse)
 async def index_page(request: Request):
-    return index_html.TemplateResponse("index.html", {"request": request})
+    return templates.TemplateResponse("index.html", {"request": request})
 
 @app.get("/select-persona", response_class=HTMLResponse)
 async def select_persona_page(request: Request):
-    return index_html.TemplateResponse("select-candidate.html", {"request": request})
+    return templates.TemplateResponse("select-candidate.html", {"request": request})
 
 @app.get("/interview", response_class=HTMLResponse)
 async def interview_page(request: Request):
-    return index_html.TemplateResponse("interview.html", {"request": request})
+    return templates.TemplateResponse("interview.html", {"request": request})
 
 @app.get("/evaluation", response_class=HTMLResponse)
 async def evaluation_page(request: Request):
-    return index_html.TemplateResponse("evaluation.html", {"request": request})
+    return templates.TemplateResponse("evaluation.html", {"request": request})
 
 @app.get("/report", response_class=HTMLResponse)
 async def report_page(request: Request):
-    return index_html.TemplateResponse("report.html", {"request": request})
+    return templates.TemplateResponse("report.html", {"request": request})

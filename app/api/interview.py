@@ -48,7 +48,8 @@ async def websocket_interview(ws: WebSocket, persona: str = Query("Junior Python
             messages = [ttt.create_chat_message(msg["role"], msg["content"]) for msg in json_data.get("history", [])]
             messages.append(ttt.create_chat_message("user", user_input))  # Добавляем текущее сообщение пользователя
             # Получаем ответ от агента
-            response = await Runner.run(agent, messages) 
+            response = await Runner.run(agent, messages)
+            # response = await Runner.run(agent, user_input, context={"messages": messages}) # Вариант с контекстом
             agent_text = response.final_output  # Текстовый ответ агента
             if is_audio:
                 # Генерируем аудиофайл с ответом агента

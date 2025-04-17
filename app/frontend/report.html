@@ -73,8 +73,7 @@
                 })
                 .then(data => {
                     // Проверяем наличие данных
-                    if (!data || (data.Situation === "-" && data.Task === "-" && 
-                                 data.Action === "-" && data.Result === "-")) {
+                    if (!data) {
                         throw new Error('Нет данных для отображения. Возможно, оценка еще не была выполнена.');
                     }
                     

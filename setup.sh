@@ -6,7 +6,7 @@ GREEN='\033[0;32m'
 GRAY='\033[0;30m'
 NC='\033[0m'
 
-# Проверка наличия python3 или python
+# python3 / python
 PYTHON=""
 echo -e "${GRAY}Checking if python3 or python is installed${NC}"
 if command -v python3 &> /dev/null; then
