@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Профиль Кандидата</title>
+	<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex flex-col justify-center items-center bg-[#2B2D33] min-h-screen font-sans">
+	<div class="bg-white shadow p-6 rounded w-full max-w-md">
+		<h1 class="mb-4 font-bold text-2xl text-center">Выберите готовый профиль кандидата</h1>
+		<form id="persona-form" class="space-y-4">
+			<div>
+				<label for="persona-profile" class="block mb-1">Профиль:</label>
+				<select type="text" id="persona-profile" name="persona-profile" required class="p-2 border rounded w-full">
+					<option value="main_profile">Senior Python Developer</option>
+					<option value="weak_profile">Weak Python Developer</option>
+				</select>
+			</div>
+			
+			<button type="submit" class="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded w-full text-white">
+				Перейти к интервью
+			</button>
+		</form>
+	</div>
+	<script>
+        // Проверка наличия параметров и их валидация
+        document.getElementById('persona-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const persona_profile = document.getElementById('persona-profile').value.trim();
+
+            // Простая валидация на стороне клиента
+            if (!persona_profile) {
+                alert('Пожалуйста, заполните оба поля: профиль и навык.');
+                return;
+            }
+            // Прямое перенаправление на страницу интервью с параметрами
+            window.location.href = `/interview_profile?profile=${encodeURIComponent(persona_profile)}`;
+        });
+    </script>
+</body>
+</html>

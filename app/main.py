@@ -23,9 +23,17 @@ async def index_page(request: Request):
 async def select_persona_page(request: Request):
     return templates.TemplateResponse("select-candidate.html", {"request": request})
 
+@app.get("/select-profile", response_class=HTMLResponse)
+async def select_persona_page(request: Request):
+    return templates.TemplateResponse("select-profile.html", {"request": request})
+
 @app.get("/interview", response_class=HTMLResponse)
 async def interview_page(request: Request):
     return templates.TemplateResponse("interview.html", {"request": request})
+
+@app.get("/interview_profile", response_class=HTMLResponse)
+async def interview_page(request: Request):
+    return templates.TemplateResponse("interview_profile.html", {"request": request})
 
 @app.get("/evaluation", response_class=HTMLResponse)
 async def evaluation_page(request: Request):

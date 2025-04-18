@@ -9,7 +9,7 @@ def load_prompts(filename: str) -> dict:
     current_dir = os.path.dirname(os.path.dirname(__file__))
     prompts_file = os.path.join(current_dir, "prompts", filename)
     with open(prompts_file, "r") as file:
-        return yaml.safe_load(file)
+        return yaml.safe_load(file)    
 
 def extract_xml(text: str, tag: str) -> str:
     """
