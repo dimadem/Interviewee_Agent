@@ -5,6 +5,7 @@ from fastapi.responses import HTMLResponse
 from app.api.evaluation import router as evaluation_router
 from app.api.interview import router as interview_router
 from app.api.resume import router as resume_router
+from app.api.recruiter_training import router as recruiter_training_router
 
 app = FastAPI()
 
@@ -12,6 +13,7 @@ app = FastAPI()
 app.include_router(evaluation_router)
 app.include_router(interview_router)
 app.include_router(resume_router)
+app.include_router(recruiter_training_router)
 
 # Templates for frontend
 templates = Jinja2Templates(directory="app/frontend")
@@ -48,3 +50,26 @@ async def report_page(request: Request):
 @app.get("/resume-analysis", response_class=HTMLResponse)
 async def resume_analysis_page(request: Request):
     return templates.TemplateResponse("resume-analysis.html", {"request": request})
+
+@app.get("/recruiter-training", response_class=HTMLResponse)
+async def recruiter_training_page(request: Request):
+    return templates.TemplateResponse("recruiter-training.html", {"request": request})
+
+@app.get("/recruiter-training-session")
+async def recruiter_training_session(
+    request: Request,
+    position: str,
+    personality: str,
+    experience: str,
+    honesty: str
+):
+    return templates.TemplateResponse(
+        "recruiter-training-session.html",
+        {
+            "request": request,
+            "position": position,
+            "personality": personality,
+            "experience": experience,
+            "honesty": honesty
+        }
+    )
