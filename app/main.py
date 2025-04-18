@@ -4,12 +4,14 @@ from fastapi.responses import HTMLResponse
 
 from app.api.evaluation import router as evaluation_router
 from app.api.interview import router as interview_router
+from app.api.resume import router as resume_router
 
 app = FastAPI()
 
 # Инициализируем роутеры для API
 app.include_router(evaluation_router)
 app.include_router(interview_router)
+app.include_router(resume_router)
 
 # Templates for frontend
 templates = Jinja2Templates(directory="app/frontend")
@@ -42,3 +44,7 @@ async def evaluation_page(request: Request):
 @app.get("/report", response_class=HTMLResponse)
 async def report_page(request: Request):
     return templates.TemplateResponse("report.html", {"request": request})
+
+@app.get("/resume-analysis", response_class=HTMLResponse)
+async def resume_analysis_page(request: Request):
+    return templates.TemplateResponse("resume-analysis.html", {"request": request})
