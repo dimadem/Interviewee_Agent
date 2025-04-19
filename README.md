@@ -47,9 +47,9 @@ apt-get install -y --no-install-recommends \
     software-properties-common
 ```
 3. git pull
-4. VSCode -> ssh connect with `https://code.visualstudio.com/docs/remote/ssh-tutorial`
-5. ./dev.sh -> open server as a localhost, VSCode handles all port redirections
-6. enojy
+4. VS Code -> SSH connect with `https://code.visualstudio.com/docs/remote/ssh-tutorial`
+5. ./dev.sh -> open server as a localhost, VS Code handles all port redirections
+6. enjoy
 
 ---
 
