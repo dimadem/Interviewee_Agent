@@ -33,7 +33,7 @@
 
 ### **Development**
 1. ssh root@ip -> password
-2. install deps
+2. install dependensies
 ```
 apt-get update
 apt-get install -y --no-install-recommends \
